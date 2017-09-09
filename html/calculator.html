@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>简单小日历</title>
+    <link type="text/css" rel="stylesheet" href="../css/calculator.css"></link>
+    <link type="text/css" rel="stylesheet" href="../css/bootstrap.min.css"></link>
+    <script type="text/javascript" src="../js/calculator.js"></script><!--
+    <script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>-->
+</head>
+<body>
+    <div>
+        <table class="table" id="tableFirst">
+            <tr>
+                <td id="lessYear" onclick="changeYear('-')"><button class="btn btn-success"><<</button></td>
+                <td id="lessMonth" onclick="changeMonth('-')"><button class="btn btn-success"><</button></td>
+                <td class="deleteCursor" colspan="3"><span></span></td>
+                <td id="plusMonth" onclick="changeMonth('+')"><button class="btn btn-success">></button></td>
+                <td id="plusYear" onclick="changeYear('+')"><button class="btn btn-success">>></button></td>
+            </tr>
+            <tr>
+                <td class="deleteCursor"><span>日</span></td>
+                <td class="deleteCursor"><span>一</span></td>
+                <td class="deleteCursor"><span>二</span></td>
+                <td class="deleteCursor"><span>三</span></td>
+                <td class="deleteCursor"><span>四</span></td>
+                <td class="deleteCursor"><span>五</span></td>
+                <td class="deleteCursor"><span>六</span></td>
+            </tr>
+            <tr>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+            </tr>
+            <tr>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+            </tr>
+            <tr>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+            </tr>
+            <tr>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+            </tr>
+            <tr>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+            </tr>
+            <tr>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+                <td><span></span></td>
+            </tr>
+            <tr>
+                <td class="deleteCursor" colspan="7"><span></span></td>
+            </tr>
+            <tr>
+                <td><a>返回今天</a></td>
+                <td class="deleteCursor"><span></span></td>
+                <td class="deleteCursor"><span>跳转至</span></td>
+                <td class="deleteCursor" colspan="3"><input class="input-sm" id="inputValue" placeholder="请输入右边格式：1970.1.1，可以只输入年份或者年月"></td>
+                <td><button class="btn btn-success">确定</button></td>
+            </tr>
+        </table>
+    </div>
+</body>
+    <!--<script type="text/javascript" src="../js/bootstrap.min.js"></script>-->
+</html>

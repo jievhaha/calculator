@@ -1,0 +1,36 @@
+#tableFirst tr td{
+    text-align:center;
+    border:0;
+    font-size:18px;
+    border-radius:5px;
+    Cursor : pointer;
+}
+
+#tableFirst tr td a{
+    color: #0179AF;
+    text-decoration:none;
+}
+
+#tableFirst tr td a:hover{
+    color: #03a9f4;
+}
+
+#tableFirst tr td input{
+    padding:0;
+    width:90%;
+    font-size:14px;
+    text-align:center;
+}
+
+#tableFirst .deleteCursor{
+    Cursor: default;
+}
+
+.colorNow{
+    background-color: #fff;
+}
+
+.actived{
+    background-color: #03a9f4;
+    color: #fff;
+}
