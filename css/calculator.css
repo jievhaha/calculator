@@ -3,7 +3,6 @@
     border:0;
     font-size:18px;
     border-radius:5px;
-    Cursor : pointer;
 }
 
 #tableFirst tr td a{
@@ -28,9 +27,26 @@
 
 .colorNow{
     background-color: #fff;
+    Cursor : pointer;
 }
 
-.actived{
+#actived{
     background-color: #03a9f4;
     color: #fff;
+    Cursor : pointer;
+}
+
+#timeFont1{
+    font-weight:bold;
+    color: #f00;
+}
+
+#timeFont2{
+    font-weight:bold;
+    color: #0f0;
+}
+
+.bacColor{
+    color:#cccccc;
+    Cursor: default;
 }
