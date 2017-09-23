@@ -4,6 +4,8 @@ var globalVar = {
     witchMonth:0,//当前月
     saveX:0,//最后一天在二维数组的位置
     saveY:0,
+    firstX:0,//填充空白后第一天所在的行
+    lastX:0,//填充空白后最后一天所在的行
     array:new Array(),//存放日期
     rows:document.getElementsByTagName("tr"),
     tdRows:document.getElementsByTagName("td"),
@@ -13,7 +15,8 @@ window.onload = function () {
     setInterval(getTime,1000);
 
     globalVar.rows[9].cells[4].onclick = stepDate;
-    globalVar.tdRows[55].onclick = goToday;
+    globalVar.rows[9].cells[3].onkeydown = EnterPress;
+    globalVar.rows[9].cells[0].onclick = goToday;//也可以直接获取td，globalVar.tdRows[55].onclik = goToday;
 
     for(var i = 0; i < 7; i++){
         globalVar.array[i] = new Array();
@@ -44,7 +47,8 @@ var all = function (witchDay) {
 
     definedLocal(witchDay,totalDate);
 
-    fullArray(witchDay,globalVar.saveX,globalVar.saveY);
+    fullArray(witchDay);//witchDay确定每月第一天的Y轴，决定是否在前边添加上月后几天日期
+
 
     fullTable();
 
@@ -71,8 +75,32 @@ var getTime = function () {
     if(seconds < 10){
         seconds = "0" + seconds;
     }
+    if(document.getElementById("timeFont1").style.display =="none"){
+        document.getElementById("timeFont1").style.display = "";
+        document.getElementById("timeFont2").style.display = "none";
+    }else if(document.getElementById("timeFont2").style.display == "none"){
+        document.getElementById("timeFont2").style.display = "";
+        document.getElementById("timeFont1").style.display = "none";
+    }
+
     var time = hours + ":" + minutes + ":" + seconds;
-    globalVar.tdRows[56].firstChild.innerHTML = time;
+    var timeValue = document.getElementsByClassName("timeValue");
+    for(var i = 0; i < timeValue.length; i++){
+        timeValue[i].innerHTML = time;
+    }
+
+
+}
+//----------------------------------- End --------------------------------------------
+
+//----------------------------------- Begin ------------------------------------------
+/*
+输入框添加监听回车事件
+ */
+var EnterPress = function(){
+    if(event.keyCode == 13){
+        stepDate();
+    }
 }
 //----------------------------------- End --------------------------------------------
 
@@ -81,6 +109,8 @@ var getTime = function () {
 输入日期跳转
  */
 var stepDate = function () {
+    deleteColor();
+
     var inputValue = document.getElementById("inputValue").value;
     var inputArray = inputValue.split(".");
     globalVar.witchFullYear = inputArray[0];
@@ -113,18 +143,6 @@ var goToday = function () {
 
     all(witchDay);
 
-    var date = new Date();
-    var dateDay = date.getDate();
-    for(var i = 2; i < globalVar.rows.length - 2; i++){
-        for(var j = 0; j < 7; j++){
-            if(globalVar.rows[i].cells[j].firstChild.innerHTML == dateDay){
-                globalVar.rows[i].cells[j].className = "actived";
-            }else{
-                globalVar.rows[i].cells[j].className = "colorNow";
-            }
-        }
-    }
-
     differentDay();
 
     globalVarValue();
@@ -141,25 +159,24 @@ var addOnclick = function () {
         globalVar.tdRows[i].onclick = function changeColor(obj){
             for(var i = 4; i < this.parentNode.parentNode.parentNode.childNodes[1].childNodes.length;i += 2){
                 for(var j = 1; j < this.parentNode.parentNode.parentNode.childNodes[1].childNodes[i].childNodes.length; j += 2){
-                    this.parentNode.parentNode.parentNode.childNodes[1].childNodes[i].childNodes[j].className = "colorNow";
+                    this.parentNode.parentNode.parentNode.childNodes[1].childNodes[i].childNodes[j].className += " " +"colorNow";
+                    this.parentNode.parentNode.parentNode.childNodes[1].childNodes[i].childNodes[j].setAttribute("id","");
                 }
             }
-            this.className = "actived";
-
-            for(var i = 2; i < globalVar.rows.length - 2; i++){
-                for(var j = 0; j < globalVar.rows[i].cells.length; j++){
-                    if(globalVar.rows[i].cells[j].firstChild.innerHTML == ""){
-                        globalVar.rows[i].cells[j].onclick = function() {};
-                        globalVar.rows[i].cells[j].className = "deleteCursor";
-                    }
-                }
-            }
+            this.setAttribute("id","actived");
 
             differentDay();
         };
     }//给td标签添加点击事件更改背景颜色
 
+    var bacColor = document.getElementsByClassName("bacColor");
+    if(bacColor.length > 0){
+        for(var i = 0; i < bacColor.length; i++){
+            bacColor[i].onclick = function changeColor(obj) {
 
+            }
+        }
+    }//去掉灰色td事件
 };
 //----------------------------------- End ---------------------------------------------
 
@@ -171,6 +188,8 @@ var globalVarValue = function () {
     globalVar.saveX = 0;
     globalVar.saveY = 0;
     globalVar.witchDate = 1;
+    globalVar.lastX = 0;
+    globalVar.firstX = 0;
 }
 //----------------------------------- End --------------------------------------------
 
@@ -183,8 +202,10 @@ var differentDay = function () {
     dateFirst.setFullYear(globalVar.witchFullYear);
     dateFirst.setMonth(globalVar.witchMonth);
 
-    var dateSelected = document.getElementsByClassName("actived");
-    var dateSelectedValue = dateSelected[0].firstChild.innerHTML;
+    /*var dateSelected = document.getElementsByClassName("actived");
+    var dateSelectedValue = dateSelected[0].firstChild.innerHTML;*/
+    var dateSelected = document.getElementById("actived");
+    var dateSelectedValue = dateSelected.firstChild.innerHTML;
     dateFirst.setDate(dateSelectedValue);
     var dateSecond = new Date();
 
@@ -199,7 +220,7 @@ var differentDay = function () {
         dateSelectedValue = "0" + dateSelectedValue;
     }
     if(differentDay < 10){
-        if(differentDay === 0){
+        if(differentDay == 0){
             dateAll = globalVar.witchFullYear + "年" + month + "月" + dateSelectedValue + "日";
         }else{
             differentDay = "0" + differentDay;
@@ -232,12 +253,12 @@ var differentDate = function () {
 改变年份或者月份的时候去掉选中日期的背景色
 */
 var deleteColor = function () {
-    var oldColorRows = document.getElementsByClassName("actived");
-    if(oldColorRows.length > 0 ){
-        for(var i = 0; i < oldColorRows.length; i++){
-            oldColorRows[i].className = "colorNow";
-        }
+
+    var oldColorRows = document.getElementById("actived");
+    if(oldColorRows != undefined && oldColorRows != null && oldColorRows != ""){
+        oldColorRows.setAttribute("id","");
     }
+
 }
 //----------------------------------- End ---------------------------------------------
 
@@ -246,11 +267,13 @@ var deleteColor = function () {
 改变年份
 */
 var changeYear = function (str) {
+    globalVar.rows[9].cells[3].firstChild.value = "";//清空输入框
+
     deleteColor();
     var date = new Date();
-    if(str !=undefined && str!=null && str === "-"){
+    if(str !=undefined && str!=null && str == "-"){
         globalVar.witchFullYear -= 1;
-    }else if (str !=undefined && str!=null && str === "+"){
+    }else if (str !=undefined && str!=null && str == "+"){
         globalVar.witchFullYear += 1;
     }else {
         return false;
@@ -273,21 +296,22 @@ var changeYear = function (str) {
 改变月份
 */
 var changeMonth = function (str) {
+    globalVar.rows[9].cells[3].firstChild.value = "";//清空输入框
 
     deleteColor();
 
     var date = new Date();
-    if(str !=undefined && str!=null && str === "-"){
+    if(str !=undefined && str!=null && str == "-"){
         globalVar.witchMonth -= 1;
-    }else if (str !=undefined && str!=null && str === "+"){
+    }else if (str !=undefined && str!=null && str == "+"){
         globalVar.witchMonth += 1;
     }else {
         return false;
     }
-    if(globalVar.witchMonth === -1){
+    if(globalVar.witchMonth == -1){
         globalVar.witchFullYear -= 1;
         globalVar.witchMonth = 11;
-    }else if(globalVar.witchMonth === 12){
+    }else if(globalVar.witchMonth == 12){
         globalVar.witchFullYear += 1;
         globalVar.witchMonth = 0;
     }
@@ -309,12 +333,16 @@ var changeMonth = function (str) {
 给日历赋值
  */
 var fullTable = function () {
+    var clearBacColor = document.getElementsByClassName("bacColor");
+    if(clearBacColor.length > 0){
+        for(var i = clearBacColor.length - 1; i >= 0 ; i--){
+            clearBacColor[i].className = "colorNow";
+        }
+    }
+
     for(var i = 2; i < globalVar.rows.length - 2; i++){
         for(var j = 0; j < 7; j++){
             globalVar.rows[i].cells[j].firstChild.innerHTML = globalVar.array[i - 2][j];
-            if(globalVar.array[i - 2][j] == globalVar.oldDate){
-                globalVar.rows[i].cells[j].className = "oldSelected";
-            }
         }
     }
     var witchMonth = globalVar.witchMonth + 1;
@@ -326,12 +354,44 @@ var fullTable = function () {
     var date = new Date();
     var newFullYear = date.getFullYear();
     var newMonth = date.getMonth();
-    if(newFullYear === globalVar.witchFullYear && newMonth === globalVar.witchMonth){
+    if(newFullYear == globalVar.witchFullYear && newMonth == globalVar.witchMonth){
         var dateValue = date.getDate();
         for(var i = 12; i < globalVar.tdRows.length - 6; i++){
             if(globalVar.tdRows[i].firstChild.innerHTML == dateValue){
-                globalVar.tdRows[i].className = "actived";
+                globalVar.tdRows[i].setAttribute("id","actived");
             }
+        }
+    }
+
+    var date1 = new Date(globalVar.witchFullYear,globalVar.witchMonth,1);
+
+    var dayNum = date1.getDay();
+
+    if(globalVar.firstX > 0){
+        for(var i = 0; i < 7; i++){
+            globalVar.rows[2].cells[i].className = "bacColor";
+        }
+    }else{
+        for(var i = 0; i < dayNum; i++){
+            globalVar.rows[2].cells[i].className = "bacColor";
+        }
+    }
+    if(globalVar.lastX == 4){
+        if(globalVar.saveY == 6){
+            for(var i = 0; i < 7; i++){
+                globalVar.rows[7].cells[i].className = "bacColor";
+            }
+        }else{
+            for(var i = globalVar.saveY + 1; i < 7; i++){
+                globalVar.rows[6].cells[i].className = "bacColor";
+            }
+            for(var i = 0; i < 7; i++){
+                globalVar.rows[7].cells[i].className = "bacColor";
+            }
+        }
+    }else{
+        for(var i = globalVar.saveY + 1; i < 7; i++){
+            globalVar.rows[7].cells[i].className = "bacColor";
         }
     }
 }
@@ -339,44 +399,51 @@ var fullTable = function () {
 
 //----------------------------------- Begin -------------------------------------------
 /*
-给数组没有值的位置赋""
+给数组没有值的位置赋值
  */
-var fullArray = function (dayNum,saveX,saveY) {
-    for(var i = 0; i < dayNum; i++){
-        globalVar.array[0][i] = "";
+var fullArray = function (dayNum) {
+    var tempBeginDate = 31;
+    var tempEndDate = 1;
+    var tempSaveX = globalVar.saveX;//存放最后一行是否为5
+    var tempArray = new Array();
+    globalVar.lastX = globalVar.saveX;
+    if(globalVar.witchMonth == 0){//当当前月为一月份，直接前边从31补充（毕竟每12月都有31天）
+        tempBeginDate = 31;
+    }else{//假如在本年，只需从global.dateNum[]中获取global.witchMonth - 1月的天数
+        tempBeginDate = globalVar.dateNum[globalVar.witchMonth - 1];
     }
-
-    if(saveX == 5){
-        if(saveY == 6){
-        }else{
-            saveY += 1
-            for(; saveY < 7; saveY++){
-                globalVar.array[5][saveY] = "";
-
-
-
-
-            //    全部重新赋值，第一行前一个月最后一行，最后一行下个月第一行
-            }
+    if(dayNum > 0){//假如当前月第一天不是周日，则直接在前边添加上月末尾天数
+        for(var i = dayNum -1 ; i >= 0; i--){
+            globalVar.array[0][i] = tempBeginDate--;
         }
+    }else{//假如当前月第一天星期日则在数组前添加一行
+        for(var i = 6; i >= 0; i--){
+            tempArray[i] = tempBeginDate--;
+        }
+        tempSaveX++;
+        globalVar.array.unshift(tempArray);
+        globalVar.firstX = globalVar.firstX + 1;
+        globalVar.lastX = globalVar.lastX + 1;
+    }
+    if(tempSaveX == 5){//tempSaveX只会有两种情况4和5,有可能是因为最前边添加了一行变为了5.
+         if(globalVar.saveY == 6){
+             //不做任何操作
+         }else{
+             for(var i = globalVar.saveY + 1; i < 7; i++){
+                 globalVar.array[5][i] = tempEndDate++;
+             }
+         }
     }else{
-        if(saveY == 6){
-            saveX += 1;
-            for(; saveX < 6; saveX++){
-                for(var i = 0; i < 7; i++){
-                    globalVar.array[saveX][i] = "";
-                }
+        if(globalVar.saveY == 6){
+            for(var i = 0; i < 7; i++){
+                globalVar.array[5][i] = tempEndDate++;
             }
         }else{
-            saveY += 1;
-            for(;saveX < 6; saveX++){
-                for(;saveY < 7; saveY++){
-                    globalVar.array[saveX][saveY] = "";
-
-
-                    // 全部重新赋值，第一行空白，最后一行下个月第一行
-                }
-                saveY = 0;
+            for(var i = globalVar.saveY + 1; i < 7;i++){
+                globalVar.array[4][i] = tempEndDate++;
+            }
+            for(var i = 0; i < 7; i++){
+                globalVar.array[5][i] = tempEndDate++;
             }
         }
     }
